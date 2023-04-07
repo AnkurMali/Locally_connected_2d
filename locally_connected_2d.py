@@ -41,3 +41,20 @@ output = conv.forward(x)
 print(output)
 ## This will give you the weights
 print(conv.weight.shape)
+
+
+### Using multiple locallyconnected
+
+## First get shape
+_, h,w,in_channels = output.shape
+## As number of output_channels will become input_channel for layer below
+conv2 = locallyconnected_tf(h,w,in_channels, out_channels, output_size, kernel_size, stride, padding = 'VALID', bias=False)
+output2 = conv2.forward(output)
+print(conv2.weight.shape)
+## Now repeat this get shape, change variables as needed
+
+_, h,w,in_channels = output2.shape
+## As number of output_channels will become input_channel for layer below
+conv3 = locallyconnected_tf(h,w,in_channels, out_channels, output_size, kernel_size, stride, padding = 'VALID', bias=False)
+output3 = conv3.forward(output2)
+print(conv3.weight.shape)
