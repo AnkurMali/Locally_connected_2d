@@ -1,8 +1,10 @@
 class locallyconnected_tf(object):
-  def __init__(self, in_channels, out_channels, output_size, kernel_size, stride, padding='VALID', bias = False):
+  def __init__(self, h,w,in_channels, out_channels, output_size, kernel_size, stride, padding='VALID', bias = False):
     super(locallyconnected_tf, self).__init__()
     initializer = tf.compat.v1.keras.initializers.Orthogonal()
     total_input_size = (kernel_size**2) * in_channels
+    output_size = (w - kernel_size)/stride + 1
+    output_size = int(output_size)
     self.weight = tf.Variable(initializer(shape=(1, output_size, output_size, total_input_size, out_channels)))
     #self.bias = tf.Variable(initializer(shape=(1, output_size, output_size, out_channels)))
     self.kernel_size = kernel_size
@@ -28,12 +30,12 @@ x = tf.random.normal(shape=(batch_size, h, w, in_channels))
 
 # # Create layer and test if backpropagation works
 out_channels = 2
-output_size = 22
+output_size = 22 # This will be calculated on the fly, once h, w and in_channels are provided using (W - F + 2P)/S)+1
 kernel_size = 3
 stride = 1
-
+## Important provide input_height (h) and output_height (h)
 ## Call the operator
-conv = locallyconnected_tf(in_channels, out_channels, output_size, kernel_size, stride, bias=False)
+conv = locallyconnected_tf(h,w,in_channels, out_channels, output_size, kernel_size, stride, bias=False)
 ## This will give you the output
 output = conv.forward(x)
 print(output)
