@@ -58,3 +58,44 @@ _, h,w,in_channels = output2.shape
 conv3 = locallyconnected_tf(h,w,in_channels, out_channels, output_size, kernel_size, stride, padding = 'VALID', bias=False)
 output3 = conv3.forward(output2)
 print(conv3.weight.shape)
+
+
+
+#### Test-2 Adding locallyconnected with max_pooling layer (Will this code work, let's find out)
+
+# # Create input
+batch_size = 5
+in_channels = 64
+h, w = 32, 32
+x = tf.random.normal(shape=(batch_size, h, w, in_channels))
+# x = torch.randn(batch_size, in_channels, h, w)
+
+# # Create layer and test if backpropagation works
+out_channels = 128
+output_size = 30
+kernel_size = 3
+stride = 1
+conv = locallyconnected_tf(h,w,in_channels, out_channels, output_size, kernel_size, stride, padding = 'VALID', bias=False)
+
+output = conv.forward(x)
+#print(conv.weight.shape)
+#print(output.shape)
+max_operation = tf.nn.max_pool2d(output, ksize=[1,3,3,1], strides=[1,1,1,1], padding = 'VALID', data_format='NHWC', name=None)
+### Using multiple locallyconnected
+
+## First get shape
+_, h,w,in_channels = max_operation.shape
+print(max_operation.shape)
+## As number of output_channels will become input_channel for layer below
+conv2 = locallyconnected_tf(h,w,in_channels, out_channels, output_size, kernel_size, stride, padding = 'VALID', bias=False)
+output2 = conv2.forward(max_operation)
+print(conv2.weight.shape)
+## Now repeat this get shape, change variables as needed
+max_operation2 = tf.nn.max_pool2d(output2, ksize=kernel_size, strides=stride, padding = 'VALID', data_format='NHWC', name=None)
+_, h,w,in_channels = max_operation2.shape
+## As number of output_channels will become input_channel for layer below
+conv3 = locallyconnected_tf(h,w,in_channels, out_channels, output_size, kernel_size, stride, padding = 'VALID', bias=False)
+output3 = conv3.forward(max_operation2)
+print(conv3.weight.shape)
+
+### It's working
