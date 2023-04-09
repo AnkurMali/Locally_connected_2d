@@ -1,4 +1,8 @@
-class locallyconnected_tf(object):
+import tensorflow as tf
+import numpy as np
+
+
+class locallyconnected_tf(tf.Module):
   def __init__(self, h,w,in_channels, out_channels, output_size, kernel_size, stride, padding='VALID', bias = False):
     super(locallyconnected_tf, self).__init__()
     initializer = tf.compat.v1.keras.initializers.Orthogonal()
@@ -10,7 +14,8 @@ class locallyconnected_tf(object):
     self.kernel_size = kernel_size
     self.stride = stride
     self.padding = padding
-
+ 
+  @tf.function
   def forward(self,x):
     _,h,w,c = x.shape # Assuming it is coming from numpy or tensor
     x_windows = tf.compat.v1.extract_image_patches(x, ksizes =[1,self.kernel_size,self.kernel_size,1], strides = [1,self.stride,self.stride,1], rates = [1,1,1,1], padding=self.padding)
